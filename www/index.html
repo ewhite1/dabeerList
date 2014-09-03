@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>DaBeerList</title>
+
+
+    <!-- compiled css output -->
+    <link href="css/ionic.app.css" rel="stylesheet">
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+  <body ng-app="beerlist">
+<div class="bar bar-header bar-calm">
+  <h1 class="title">daBEERLIST</h1>
+  <span class="label label-success" id="network-status">Online</span>
+      <a data-target="#add-item" href="#" class="button button-clear icon ion-plus-round pull-right view-switcher"></a>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 view active" id="full-list">
+            
+        </div><!-- end full-list -->
+        <script id="list-template" type="text/x-handlebars-template">
+        <p>{{title}}</p>
+        <p>{{body}}</p>
+        </script>
+        <div class="col-lg-12 view" id="add-item">
+           
+        </div><!-- end add-item-->
+        <div class="col-lg-12 view" id="edit-item">
+           
+        </div><!-- end edit-item-->
+
+        <div class="col-lg-12 view" id="item-detail">
+           <!-- the detail view will render here -->
+        </div>
+
+    </div>
+
+</div>
+<script id="full-list-template" type="text/x-handlebars-template">
+    <div class="list-group">
+        {{#if beers}}
+        {{#each beers}}
+        <a data-item={{id}} data-target="#item-detail" href="#" class="list-group-item view-switcher">{{title}}</a>
+        {{/each}}
+        {{else}}
+        <h3>No items here yet! Click 'Add' to get started!</h3>
+        {{/if}}
+    </div>
+</script> 
+<script id="item-detail-template" type="text/x-handlebars-template">
+    <h3>Item Detail</h3>
+    <div class="list-group">
+        <p id="show-title" class="list-group-item">{{title}}</p>   
+        <p id="show-description" class="list-group-item">{{description}}</p>
+        <p id="show-image" class="list-group-item">
+            <span class="label">Image:</span>
+            <img src="{{image}}">
+        </p>
+        <p id="show-location" class="list-group-item">Location: Lat {{location.latitude}}, Long {{location.longitude}}</p>
+    </div>
+
+    <p>
+        <button data-target="#full-list" id="back-to-list" class="btn btn-lg btn-default  view-switcher">Back to List</button>
+        <button data-item={{id}} data-target="#edit-item" id="edit-item" class=" view-switcher btn btn-lg btn-default pull-right">Edit</button>
+    </p>
+</script>
+
+<script id="add-photo-template" type="text/x-handlebars-template">
+  <button type="button" data-camera="add" class="shoot btn btn-lg btn-success pull-right">Take photo</button>
+</script>
+
+<script id="add-location-template" type="text/x-handlebars-template">
+    <input type="hidden" id="location" name="location" value-{{location.string}} >
+    <p><strong>Current Location: Lat {{location.coords.latitude}}, Long {{location.coords.longitude}}</strong></p>
+</script>
+
+<script id="add-item-template" type="text/x-handlebars-template" >
+<h3>Add Item</h3>
+<form role="form" id="add-form">
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input class="form-control item-data" id="title" name="title" type="text">
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control item-data description" id="description" name="description"></textarea>
+    </div>
+    <div class="form-group clearfix">
+        <button type="button" id="add-transcribe" class="transcribe btn btn-lg btn-info pull-right">Transcribe</button>
+    </div>
+    <div class="form-group clearfix">
+       <input type="hidden" id="add-photo-input" name="image" value>
+                <video id="add-video" class="pull-left" autoplay></video>
+                <img id="add-photo-image" class="pull-left photo" src>
+                <canvas id="add-photo-canvas" class="hidden" width=640 height=480 ></canvas>
+                <button data-camera="add" type="button" class="access-camera btn btn-lg btn-success pull-right">Add a photo</button>
+                <div id="add-photo"></div>
+    </div>
+    <div class="form-group">
+
+        <div id="add-location">Getting current location...</div>
+    </div>
+
+    <div class="form-group">
+        <button data-target="#full-list" id="cancel-add-item" class="btn btn-lg btn-default pull-left view-switcher">Cancel</button>
+        <button data-target="#full-list" id="submit-item" class="btn btn-lg btn-primary pull-right view-switcher">Submit</button>
+    </div>
+</form>
+</script>
+
+<script id="edit-photo-template" type="text/x-handlebars-template">
+    <button type="button" data-camera="edit" class="shoot btn btn-lg btn-success pull-right">Take Photo</button>
+</script>
+<script id="edit-item-template" type="text/x-handlebars-template">
+<h3>Edit Item</h3>
+<form role="form" id="edit-form">
+<input type="hidden" name="id" value="{{id}}" />
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input class="form-control item-data" id="title" name="title" type="text" value="{{title}}">
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea class="form-control item-data description" id="description" name="description">{{description}}</textarea>
+    </div>
+    <div class="form-group clearfix">
+        <button type="button" id="edit-transcribe" class="transcribe btn btn-lg btn-info pull-right">Transcribe</button>
+    </div>
+    <div class="form-group clearfix">
+        <input type="hidden" id="edit-photo-input" name="image" value>
+        <video id="edit-video" class="pull-left" autoplay></video>
+        <img id="edit-photo-image" class="pull-left photo" src="{{image}}">
+        <canvas id="edit-photo-canvas" class="hidden" width=640 height=480 ></canvas>
+        <button data-camera="edit" type="button" class="access-camera btn btn-lg btn-success pull-right">Change photo</button>
+    <div id="edit-photo"></div> 
+    </div>
+    <div class="form-group">
+        <p id="show-location" class="list-group-item">Location: Lat {{location.latitude}}, Long {{location.longitude}}</p>
+    </div>
+
+    <div class="form-group">
+        <button data-target="#full-list" id="cancel-add-item" class="btn btn-lg btn-default pull-left view-switcher">Cancel</button>
+        button data-target="#full-list" id="edit-item" class="btn btn-lg btn-primary pull-right view-switcher">Submit</button>
+    </div>
+</form>
+</script>
+  </body>
+</html>
