@@ -1,8 +1,8 @@
 daBeerList
 =====================
-## A starter project by me
+A starter project by me
 
-# Project Details
+## Project Details
 This project uses the ionic framework. 
 
 Originally, the app was scaffold in yeoman, I am now working on moving it to ionic. So some of the current code isn't working, but is there.
